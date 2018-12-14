@@ -1,0 +1,223 @@
+{
+  "main.html": {
+    "refer": [
+      "setting.html",
+      "login.html",
+      "Rev/rev.html",
+      "scandevice.html",
+      "Start/Start.html",
+      "Check/ScanOrder.html",
+      "Rev/ScanOrder.html",
+      "Into/Feed.html",
+      "ProcNum/ScanOrder.html"
+    ],
+    "resources": [
+      "fonts/mui.ttf",
+      "css/mui.min.css",
+      "css/style.css",
+      "js/git.mes.key.js",
+      "js/git.mes.common.js",
+      "js/mui.min.js",
+      "js/moment.min.js",
+      "js/jquery-1.11.1.js"
+    ]
+  },
+  "login.html": {
+    "resources": [
+      "images/sinaweibo.png",
+      "images/weixin.png",
+      "images/qq.png",
+      "js/app.js",
+      "js/mui.min.js",
+      "css/mui.min.css",
+      "css/style.css",
+      "js/mui.enterfocus.js",
+      "js/git.mes.common.js",
+      "js/moment.min.js",
+      "js/jquery-1.11.1.js",
+      "fonts/mui.ttf",
+      "js/git.mes.key.js"
+    ],
+    "refer": [
+      "main.html",
+      "scan.html"
+    ]
+  },
+  "setting.html": {
+    "resources": [
+      "libs/easymob-webim-sdk/easemob.im-1.0.5.js",
+      "fonts/mui.ttf",
+      "libs/easymob-webim-sdk/json2.js",
+      "libs/easymob-webim-sdk/jquery-1.11.1.js",
+      "js/mui.locker.js",
+      "js/feedback.js",
+      "css/feedback-page.css",
+      "js/feedback-page.js",
+      "libs/easymob-webim-sdk/strophe-custom-2.0.0.js",
+      "js/mui.view.js"
+    ]
+  },
+  "scan.html": {
+    "refer": [
+      "login.html",
+      "main.html"
+    ],
+    "resources": [
+      "js/git.mes.key.js",
+      "js/git.mes.common.js",
+      "js/mui.min.js",
+      "js/moment.min.js",
+      "js/jquery-1.11.1.js",
+      "css/mui.min.css",
+      "css/style.css",
+      "fonts/mui.ttf"
+    ]
+  },
+  "Rev/rev.html": {
+    "resources": [
+      "/js/git.mes.key.js",
+      "/js/git.mes.common.js",
+      "/js/mui.min.js",
+      "/js/moment.min.js",
+      "/js/jquery-1.11.1.js",
+      "/css/style.css",
+      "/css/mui.min.css",
+      "js/git.mes.key.js",
+      "js/git.mes.common.js",
+      "js/mui.min.js",
+      "js/moment.min.js",
+      "js/jquery-1.11.1.js",
+      "css/mui.min.css",
+      "css/style.css",
+      "fonts/mui.ttf"
+    ],
+    "refer": [
+      "main.html",
+      "Rev/Detail.html"
+    ]
+  },
+  "scandevice.html": {
+    "refer": [
+      "main.html",
+      "Into/into.html"
+    ],
+    "resources": [
+      "js/git.mes.key.js",
+      "js/git.mes.common.js",
+      "js/mui.min.js",
+      "js/moment.min.js",
+      "js/jquery-1.11.1.js",
+      "css/mui.min.css",
+      "css/style.css",
+      "fonts/mui.ttf"
+    ]
+  },
+  "Into/into.html": {
+    "resources": [
+      "js/git.mes.key.js",
+      "js/git.mes.common.js",
+      "js/mui.min.js",
+      "js/moment.min.js",
+      "js/jquery-1.11.1.js",
+      "css/mui.min.css",
+      "css/style.css",
+      "fonts/mui.ttf"
+    ],
+    "refer": [
+      "main.html"
+    ]
+  },
+  "Start/Start.html": {
+    "resources": [
+      "js/git.mes.key.js",
+      "js/git.mes.common.js",
+      "js/mui.min.js",
+      "fonts/mui.ttf",
+      "js/moment.min.js",
+      "js/jquery-1.11.1.js",
+      "css/mui.min.css",
+      "css/style.css"
+    ],
+    "refer": [
+      "main.html"
+    ]
+  },
+  "Check/ScanOrder.html": {
+    "resources": [
+      "css/mui.min.css",
+      "css/style.css",
+      "js/git.mes.key.js",
+      "js/git.mes.common.js",
+      "js/mui.min.js",
+      "js/moment.min.js",
+      "js/jquery-1.11.1.js",
+      "fonts/mui.ttf"
+    ],
+    "refer": [
+      "Check/List.html"
+    ]
+  },
+  "Check/List.html": {
+    "resources": [
+      "js/git.mes.key.js",
+      "js/git.mes.common.js",
+      "js/mui.min.js",
+      "js/moment.min.js",
+      "js/jquery-1.11.1.js",
+      "css/mui.min.css",
+      "css/style.css",
+      "fonts/mui.ttf"
+    ],
+    "refer": [
+      "main.html",
+      "Check/Detail.html"
+    ]
+  },
+  "Rev/ScanOrder.html": {
+    "refer": [
+      "Rev/rev.html"
+    ]
+  },
+  "Check/Detail.html": {
+    "refer": [
+      "main.html"
+    ]
+  },
+  "Into/Feed.html": {
+    "refer": [
+      "Into/ScanDevice.html",
+      "main.html"
+    ]
+  },
+  "Into/ScanDevice.html": {
+    "refer": [
+      "Into/into.html",
+      "Into/Check.html",
+      "Into/Detail.html",
+      "main.html"
+    ]
+  },
+  "Into/Check.html": {
+    "refer": [
+      "main.html",
+      "Into/Detail.html",
+      "Into/Into.html"
+    ]
+  },
+  "ProcNum/ScanOrder.html": {
+    "refer": [
+      "main.html"
+    ]
+  },
+  "Into/Detail.html": {
+    "refer": [
+      "Into/Into.html"
+    ]
+  },
+  "Into/Into.html": {
+    "refer": [
+      "Into/Into.html",
+      "main.html"
+    ]
+  }
+}

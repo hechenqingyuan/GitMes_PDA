@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">开始作业</h1>
+		</header>
+		<div class="mui-content">
+			<div id='login-form' class="mui-input-group">
+				<div class="mui-input-row row">
+					<input id='BarCode' type="text" class="mui-input-clear BarCode" autofocus="true" placeholder="请扫描工单上二维码">
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">计划单号:</label>
+					<label id="lblPlanNumber" class="intocontent"></label>
+					<input type="hidden" id="txtPlanSnNum" name="txtPlanSnNum" value="">
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">工单号:</label>
+					<label id="lblOrderNum" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item" style="display: none;">
+				<div class="mui-input-row">
+					<label class="title">客户名称:</label>
+					<label id="lblCusName" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">产品名称:</label>
+					<label id="lblProductName" class="intocontent" style="font-size: 12px;"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">产品代号:</label>
+					<label id="lblProductBarCode" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">配方代号:</label>
+					<label id="lblBomNumber" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">预计产量:</label>
+					<label id="lblQty" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-content-padded" style="text-align: center;">
+				<button id='btnStart' type="button" class="mui-btn mui-btn-primary mui-btn-outlined">确认开始</button>
+				<button id='btnBack' type="button" class="mui-btn mui-btn-success mui-btn-outlined">返回主页</button>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="../js/moment.min.js"></script>
+		<script type="text/javascript" src="../js/git.mes.common.js"></script>
+		<script type="text/javascript" src="../js/git.mes.key.js"></script>
+		<script type="text/javascript">
+			mui.plusReady(function(){
+
+				plus.webview.currentWebview().addEventListener("show",function(e){
+	                setTimeout(function() {
+                        openSoftKeyboard();
+                        document.getElementById("BarCode").focus();
+                        closeKeyBoard();
+                    	plus.key.hideSoftKeybord();
+                    }, 300);
+	            });
+
+				/**
+				 * 开始计划任务
+				 * [Start description]
+				 * @param {[type]} SnNum [description]
+				 */
+				function Start(SnNum){
+					var LoginUser=git.GetObjectCache(CacheKey.LoginUser);
+					var param={};
+					param["SnNum"]=SnNum;
+					git.gitAjax({
+						url:PlanApiName.PlanApiName_Start,
+						data:param,
+						type:"get",
+						success:function(result){
+							if(result.Code==1){
+								mui.toast(result.Message,{ duration:'long', type:'div' }); 
+							}else{
+								git.PlayerError();
+								mui.toast(result.Message,{ duration:'long', type:'div' }); 
+							}
+							
+                        	document.getElementById("BarCode").focus();
+						}
+					});
+				}
+
+				var PlanEntity=undefined;
+
+				/**
+				 * 扫描生产计划任务单二维码
+				 * [GetPlan description]
+				 * @param {[type]} BarCode [description]
+				 */
+				var GetPlan=function(BarCode){
+					var param={};
+					param["PlanNumber"]=BarCode;
+					git.gitAjax({
+						url:PlanApiName.PlanApiName_GetPlanByNumber,
+						data:param,
+						type:"get",
+						success:function(result){
+							if(result.Code==1 && result.Result!=undefined){
+								PlanEntity=result.Result;
+								$("#lblPlanNumber").text(PlanEntity.PlanNumber);
+								$("#lblOrderNum").text(PlanEntity.OrderNum);
+								$("#txtPlanSnNum").val(PlanEntity.SnNum);
+								$("#lblCusName").text(PlanEntity.CusName);
+								$("#lblProductName").text(PlanEntity.ProductName);
+								$("#lblProductBarCode").text(PlanEntity.BarCode);
+								$("#lblBomNumber").text(PlanEntity.BomNumber);
+								$("#lblQty").text(PlanEntity.PlanQty+"kg");
+							}else{
+								git.PlayerError();
+								$("#lblPlanNumber").text("");
+								$("#lblOrderNum").text("");
+								$("#txtPlanSnNum").val("");
+								$("#lblCusName").text("");
+								$("#lblProductName").text("");
+								$("#lblProductBarCode").text("");
+								$("#lblBomNumber").text("");
+								$("#lblQty").text("");
+							}
+						}
+					});
+				}
+
+				document.getElementById("BarCode").addEventListener("keypress", function(event) {
+			        if (event.keyCode == "13"){
+			        	var BarCode=$("#BarCode").val();
+			            if(!git.IsEmpty(BarCode)){
+			            	GetPlan(BarCode);
+			            	$("#BarCode").val("");
+			            }else{
+			            	git.PlayerError();
+			            }
+			        }
+			    });
+			    
+				//开始执行作业
+				document.getElementById("btnStart").addEventListener("tap",function(){
+					var SnNum=$("#txtPlanSnNum").val();
+					if(!git.IsEmpty(SnNum)){
+						Start(SnNum);
+					}else{
+						git.PlayerError();
+						mui.toast('请先扫描工单上二维码',{ duration:'long', type:'div' }); 
+					}
+				});
+
+				//退回到主页
+				document.getElementById("btnBack").addEventListener("tap",function(){
+					mui.openWindow({
+						id:"../main.html",
+						url:"../main.html",
+						createNew:false,
+						show:{
+							autoShow:true,
+						}
+					});
+				});
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">投料复核</h1>
+		</header>
+		<div class="mui-content">
+			<div id='login-form' class="mui-input-group">
+				<div class="mui-input-row row">
+					<input id='BarCode' type="text" class="mui-input-clear BarCode" autofocus="true" placeholder="请扫描设备上二维码">
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">计划单号:</label>
+					<label id="lblPlanNumber" class="intocontent"></label>
+					<input type="hidden" id="txtPlanSnNum" name="txtPlanSnNum" value="">
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">工单号:</label>
+					<label id="lblOrderNum" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item"  style="display: none;">
+				<div class="mui-input-row">
+					<label class="title">客户名称:</label>
+					<label id="lblCusName" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">产品名称:</label>
+					<label id="lblProductName" class="intocontent" style="font-size: 12px;"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">产品代号:</label>
+					<label id="lblProductBarCode" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">配方代号:</label>
+					<label id="lblBomNumber" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">预计产量:</label>
+					<label id="lblQty" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">设备名称:</label>
+					<label id="lblDeviceName" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-content-padded" style="text-align: center; margin-top: 9px;">
+				<button id='btnBack' type="button" class="mui-btn mui-btn-primary mui-btn-outlined">返回主页</button>
+				<!-- <button id='btnDetail' type="button" class="mui-btn mui-btn-success mui-btn-outlined">查看详细</button> -->
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="../js/moment.min.js"></script>
+		<script type="text/javascript" src="../js/git.mes.common.js"></script>
+		<script type="text/javascript" src="../js/git.mes.key.js"></script>
+		<script type="text/javascript">
+			mui.plusReady(function(){
+
+				plus.webview.currentWebview().addEventListener("show",function(e){
+	                setTimeout(function() {
+                        openSoftKeyboard();
+                        document.getElementById("BarCode").focus();
+                        closeKeyBoard();
+                    	plus.key.hideSoftKeybord();
+                    }, 300);
+	            });
+
+				var webview=plus.webview.currentWebview();
+				var PlanEntity=webview.Result;
+				var DeviceEntity=undefined;
+
+				if(PlanEntity!=undefined){
+					$("#lblPlanNumber").text(PlanEntity.PlanNumber);
+					$("#lblOrderNum").text(PlanEntity.OrderNum);
+					$("#txtPlanSnNum").val(PlanEntity.SnNum);
+					$("#lblCusName").text(PlanEntity.CusName);
+					$("#lblProductName").text(PlanEntity.ProductName);
+					$("#lblProductBarCode").text(PlanEntity.BarCode);
+					$("#lblBomNumber").text(PlanEntity.BomNumber);
+					$("#lblQty").text(PlanEntity.PlanQty+"kg");
+				}
+
+				/**
+				 * 扫描设备上的二维码
+				 * [ScanDevice description]
+				 * @param {[type]} BarCode [description]
+				 */
+				function ScanDevice(BarCode){
+					var param={};
+					param["DeviceNum"]=BarCode;
+					git.gitAjax({
+						url:DeviceApiName.DeviceApiName_ScanDevice,
+						data:param,
+						type:"get",
+						success:function(result){
+							if(result.Code==1 && result.Result!=undefined){
+								DeviceEntity=result.Result;
+								$("#lblDeviceName").text(DeviceEntity.DeviceName);
+								setTimeout(function(){
+									mui.openWindow({
+										id:"Check.html",
+										url:"Check.html",
+										createNew:true,
+										show:{
+											autoShow:true,
+										},
+										extras:{PlanEntity:PlanEntity,DeviceEntity:DeviceEntity}
+									});
+								},300);
+							}else{
+								git.PlayerError();
+								mui.toast('该设备信息不存在,请确认再扫描',{ duration:'long', type:'div' }); 
+							}
+						}
+					});
+				}
+
+				/**
+				 * 扫描设备上二维码
+				 * [description]
+				 * @param  {[type]} event) {			                if (event.keyCode [description]
+				 * @return {[type]}        [description]
+				 */
+				document.getElementById("BarCode").addEventListener("keypress", function(event) {
+			        if (event.keyCode == "13"){
+			        	var BarCode=$("#BarCode").val();
+			            if(!git.IsEmpty(BarCode)){
+			            	ScanDevice(BarCode);
+			            	$("#BarCode").val("");
+			            }else{
+			            	git.PlayerError();
+			            }
+			        }
+			    });
+			    
+				/**
+				 * 退回到主页
+				 * [description]
+				 * @param  {[type]} ){					mui.openWindow({						id:"../main.html",						url:"../main.html",						createNew:false,						show:{							autoShow:true,						}					});				} [description]
+				 * @return {[type]}                                                                                                                                                           [description]
+				 */
+				document.getElementById("btnBack").addEventListener("tap",function(){
+					mui.openWindow({
+						id:"../main.html",
+						url:"../main.html",
+						createNew:false,
+						show:{
+							autoShow:true,
+						}
+					});
+				});
+
+				/**
+				 * 查看投料明细
+				 * [description]
+				 * @param  {[type]} ){					mui.openWindow({						id:"../main.html",						url:"../main.html",						createNew:false,						show:{							autoShow:true,						}					});				} [description]
+				 * @return {[type]}                                                                                                                                                           [description]
+				 */
+				// document.getElementById("btnDetail").addEventListener("tap",function(){
+				// 	mui.openWindow({
+				// 		id:"Detail.html",
+				// 		url:"Detail.html",
+				// 		createNew:false,
+				// 		show:{
+				// 			autoShow:true,
+				// 		},
+				// 		extras:{Result:PlanEntity.PlanNumber}
+				// 	});
+				// });
+			});
+		</script>
+	</body>
+
+</html>

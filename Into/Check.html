@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">投料复核</h1>
+		</header>
+		<div class="mui-content">
+			<div id='login-form' class="mui-input-group">
+				<div class="mui-input-row row">
+					<input id='BarCode' type="text" class="mui-input-clear BarCode" autofocus="true" placeholder="请扫描物料包装上二维码">
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">计划单号:</label>
+					<label id="lblPlanNumber" class="intocontent"></label>
+					<input type="hidden" id="txtPlanSnNum" name="txtPlanSnNum" value="">
+				</div>
+			</div>
+			<div class="mui-input-group item" style="display: none;">
+				<div class="mui-input-row">
+					<label class="title">工单号:</label>
+					<label id="lblOrderNum" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item" style="display: none;">
+				<div class="mui-input-row">
+					<label class="title">客户名称:</label>
+					<label id="lblCusName" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">产品名称:</label>
+					<label id="lblProductName" class="intocontent" style="font-size: 12px;"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">产品代号:</label>
+					<label id="lblProductBarCode" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item" style="display: none;">
+				<div class="mui-input-row">
+					<label class="title">配方代号:</label>
+					<label id="lblBomNumber" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item"  style="display: none;">
+				<div class="mui-input-row">
+					<label class="title">物料名称:</label>
+					<label id="lblMaterialName" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item" style="display: none;">
+				<div class="mui-input-row">
+					<label class="title" style="font-size: 12px;">要求/实际(g):</label>
+					<label id="lblWeQty" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item" style="display: none;">
+				<div class="mui-input-row">
+					<label class="title">物料批次:</label>
+					<label id="lblBatchNum" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">预计产量:</label>
+					<label id="lblQty" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item" style="display: none;">
+				<div class="mui-input-row">
+					<label class="title">设备名称:</label>
+					<label id="lblDeviceName" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item" style="display: none;">
+				<div class="mui-input-row">
+					<label class="title">下一物料:</label>
+					<label id="lblNextMatBarCode" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item" style="display: none;">
+				<div class="mui-input-row">
+					<label class="title">批次:</label>
+					<label id="lblNextBatchNum" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item" style="height: 250px;">
+				<div class="mui-input-row" style="height: 250px;">
+					<div class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<ul class="mui-table-view" id="tabList">
+					    
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="mui-content-padded" style="text-align: center; margin-top: 4px;">
+				<button id='btnBack' type="button" class="mui-btn mui-btn-primary mui-btn-outlined">返回主页</button>
+				<button id='btnRefresh' type="button" class="mui-btn mui-btn-success mui-btn-outlined">刷新</button>
+				<!-- <button id='btnDetail' type="button" class="mui-btn mui-btn-success mui-btn-outlined">查看详细</button> -->
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="../js/moment.min.js"></script>
+		<script type="text/javascript" src="../js/git.mes.common.js"></script>
+		<script type="text/javascript" src="../js/git.mes.key.js"></script>
+		<script type="text/javascript">
+			mui.plusReady(function(){
+
+				plus.webview.currentWebview().addEventListener("show",function(e){
+	                setTimeout(function() {
+                        openSoftKeyboard();
+                        document.getElementById("BarCode").focus();
+                        closeKeyBoard();
+                    	plus.key.hideSoftKeybord();
+                    }, 300);
+	            });
+
+	            mui('.mui-scroll-wrapper').scroll({
+					deceleration: 0.0005,
+					scrollY: true, //是否竖向滚动
+ 					scrollX: false, //是否横向滚动
+ 					indicators: true, //是否显示滚动条
+				});
+
+				var webview=plus.webview.currentWebview();
+				var PlanEntity=webview.PlanEntity;
+				var DeviceEntity=webview.DeviceEntity;
+
+				if(PlanEntity!=undefined && DeviceEntity!=undefined){
+					$("#lblPlanNumber").html(PlanEntity.PlanNumber+"&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;"+PlanEntity.OrderNum);
+					$("#lblOrderNum").text(PlanEntity.OrderNum);
+					$("#txtPlanSnNum").val(PlanEntity.SnNum);
+					$("#lblCusName").text(PlanEntity.CusName);
+					$("#lblProductName").text(PlanEntity.ProductName);
+					$("#lblProductBarCode").html(PlanEntity.BarCode+"&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;"+PlanEntity.BomNumber);
+					$("#lblBomNumber").text(PlanEntity.BomNumber);
+					$("#lblQty").html(PlanEntity.PlanQty+"kg"+"&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;"+DeviceEntity.DeviceName);
+				}
+
+				var SetTable=function(){
+					var WaitHtml="";
+					var CompHtml="";
+
+					if(listTask!=undefined && listTask.length>0){
+						for(var i=0;i<listTask.length;i++){
+							var item=listTask[i];
+							var IntoTime=git.JsonToDateTime(item.IntoTime);
+
+							var html="";
+							html+='<li class="mui-table-view-cell mui-media" data-SnNum="'+item.SnNum+'">';
+								html+='<a href="javascript:;">';
+									var IntoTime=git.JsonToDateTime(item.IntoTime);
+									if(!git.IsEmpty(IntoTime)){
+										html+='<span class="mui-badge mui-badge-success">已投</span>';
+									}else{
+										html+='<span class="mui-badge mui-badge-purple">待投</span>';
+									}
+									html+='<div class="mui-media-body">';
+										html+="原料代号:&nbsp;"+item.PartBarCode;
+										html+="&nbsp;&nbsp;&nbsp;&nbsp;投料顺序:-->"+item.ItemIndex;
+										var DemQty=item.DemQty*1000;
+										var RealQty=item.RealQty*1000;
+										html+='<p class="mui-ellipsis">实际/要求(g):&nbsp;'+git.ToDecimal(RealQty,4)+'/'+git.ToDecimal(DemQty,4)+'</p>';
+										
+										if(parseFloat(RealQty)>0){
+											html+='<p class="mui-ellipsis">批次:&nbsp;'+item.BatchNum+'</p>';
+										}else{
+											html+='<p class="mui-ellipsis"><span class="mui-badge  mui-badge-warning">未称量</span></p>';
+										}
+
+										
+										if(!git.IsEmpty(IntoTime)){
+											html+='<p class="mui-ellipsis">投料时间:&nbsp;'+git.JsonToDateTime(item.IntoTime,"YYYY-MM-DD HH:mm:ss")+'</p>';
+											item.IntoUserName=git.IsEmpty(item.IntoUserName) ? "":item.IntoUserName;
+											html+='<p class="mui-ellipsis">投料人:&nbsp;'+item.IntoUserName+'</p>';
+										}
+										
+									html+='</div>';
+								html+='</a>';
+							html+='</li>';
+
+							if(!git.IsEmpty(IntoTime)){
+								CompHtml+=html;
+							}else{
+								WaitHtml+=html;
+							}
+						}
+					}
+					document.getElementById('tabList').innerHTML = WaitHtml+CompHtml;
+				}
+
+				$('#tabList').on('tap', 'li', function(e){
+					var SnNum=this.getAttribute("data-SnNum");
+					mui.openWindow({
+						id:"Into.html",
+						url:"Into.html",
+						createNew:true,
+						show:{
+							autoShow:true,
+						},
+						extras:{Result:SnNum}
+					});
+				});
+				
+				var GetTaskList=function(BarCode){
+					var param={};
+					param["PlanNumber"]=BarCode;
+					console.log(JSON.stringify(param));
+					git.gitAjax({
+						url:WeightApiName.WeightApiName_GetTaskList,
+						data:param,
+						type:"get",
+						success:function(result){
+							console.log(JSON.stringify(result));
+							if(result.Code==1 && result.Result!=undefined){
+								listTask=result.Result;
+								SetTable();
+							}else{
+								git.PlayerError();
+								mui.toast(result.Message,{ duration:'long', type:'div' }); 
+							}
+						}
+					});
+				}
+				
+				GetTaskList(PlanEntity.PlanNumber);
+
+				function InTo(SnNum){
+					var LoginUser=git.GetObjectCache(CacheKey.LoginUser);
+					var UserNum=LoginUser!=undefined ? LoginUser.UserNum:"";
+					var param={};
+					param["SnNum"]=SnNum;
+					param["UserNum"]=UserNum;
+					param["PlanNum"]=PlanEntity.SnNum;
+					param["DeviceNum"]=DeviceEntity.SnNum;
+					git.gitAjax({
+						url:WeightApiName.WeightApiName_Into,
+						data:param,
+						type:"get",
+						success:function(result){
+							if(result.Code==1){
+								mui.toast(result.Message,{ duration:'long', type:'div' }); 
+								console.log(JSON.stringify(result));
+								var NextEntity=result.Result;
+								if(NextEntity!=undefined){
+									var NextPartBarCode=NextEntity.PartBarCode;
+									var NextBatchNum=NextEntity.BatchNum;
+									var NextDemQty=NextEntity.DemQty;
+
+									$('#lblNextMatBarCode').text(NextPartBarCode+"("+(NextDemQty*1000)+")");
+									$('#lblNextBatchNum').text(NextBatchNum);
+
+									if(PlanEntity!=undefined){
+										GetTaskList(PlanEntity.PlanNumber);
+									}
+								}
+							}else{
+								git.PlayerError();
+								mui.toast(result.Message,{ duration:'long', type:'div' }); 
+							}
+						}
+					});
+				}
+
+				var TaskEntity=undefined;
+				var GetTask=function(BarCode){
+					var param={};
+					param["SnNum"]=BarCode;
+					git.gitAjax({
+						url:WeightApiName.WeightApiName_GetTask,
+						data:param,
+						type:"get",
+						success:function(result){
+							if(result.Code==1 && result.Result!=undefined){
+								TaskEntity=result.Result;
+								TaskEntity.DemQty=git.ToDecimal(parseFloat(TaskEntity.DemQty)*1000,4); 
+								TaskEntity.RealQty=git.ToDecimal(parseFloat(TaskEntity.RealQty)*1000,4); 
+								$("#lblMaterialName").text(TaskEntity.PartName);
+								$("#lblWeQty").text(TaskEntity.DemQty+"/"+TaskEntity.RealQty +"");
+								$("#lblBatchNum").text(TaskEntity.BatchNum);
+
+								if(TaskEntity.DeviceNum==DeviceEntity.SnNum){
+
+									if(PlanEntity.SnNum!=TaskEntity.PlanSnNum){
+										git.PlayerError();
+										mui.toast('该物料不在此生产工单范围之内',{ duration:'long', type:'div' }); 
+									}else{
+										InTo(TaskEntity.SnNum);
+									}
+								}else{
+									git.PlayerError();
+									mui.toast('该物料不能投入到当前设备,请慎重操作',{ duration:'long', type:'div' }); 
+								}
+							}else{
+								git.PlayerError();
+								mui.toast("[错误]:"+result.Message,{ duration:'long', type:'div' }); 
+							}
+						}
+					});
+				}
+
+				/**
+				 * 刷新表格数据
+				 * [description]
+				 * @param  {[type]} e) {		                     		        } [description]
+				 * @return {[type]}    [description]
+				 */
+				document.addEventListener('BackRefresh', function(e) {
+					console.log(e.detail.str);
+					if(PlanEntity!=undefined){
+						GetTaskList(PlanEntity.PlanNumber);
+					}
+		        });
+
+				/**
+				 * 扫描物料上二维码
+				 * [description]
+				 * @param  {[type]} event) {			                if (event.keyCode [description]
+				 * @return {[type]}        [description]
+				 */
+				document.getElementById("BarCode").addEventListener("keypress", function(event) {
+			        if (event.keyCode == "13"){
+			        	var BarCode=$("#BarCode").val();
+			            if(!git.IsEmpty(BarCode)){
+			            	GetTask(BarCode);
+			            	$("#BarCode").val("");
+			            }else{
+			            	git.PlayerError();
+			            }
+			        }
+			    });
+			    
+				/**
+				 * 退回到主页
+				 * [description]
+				 * @param  {[type]} ){					mui.openWindow({						id:"../main.html",						url:"../main.html",						createNew:false,						show:{							autoShow:true,						}					});				} [description]
+				 * @return {[type]}                                                                                                                                                           [description]
+				 */
+				document.getElementById("btnBack").addEventListener("tap",function(){
+					mui.openWindow({
+						id:"../main.html",
+						url:"../main.html",
+						createNew:false,
+						show:{
+							autoShow:true,
+						}
+					});
+				});
+
+				/**
+				 * 刷新投料数据
+				 * [description]
+				 * @param  {[type]} ){					mui.openWindow({						id:"../main.html",						url:"../main.html",						createNew:false,						show:{							autoShow:true,						}					});				} [description]
+				 * @return {[type]}                                                                                                                                                           [description]
+				 */
+				document.getElementById("btnRefresh").addEventListener("tap",function(){
+					if(PlanEntity!=undefined){
+						GetTaskList(PlanEntity.PlanNumber);
+					}
+				});
+
+				/**
+				 * 查看投料明细
+				 * [description]
+				 * @param  {[type]} ){					mui.openWindow({						id:"../main.html",						url:"../main.html",						createNew:false,						show:{							autoShow:true,						}					});				} [description]
+				 * @return {[type]}                                                                                                                                                           [description]
+				 */
+				// document.getElementById("btnDetail").addEventListener("tap",function(){
+				// 	mui.openWindow({
+				// 		id:"Detail.html",
+				// 		url:"Detail.html",
+				// 		createNew:false,
+				// 		show:{
+				// 			autoShow:true,
+				// 		},
+				// 		extras:{Result:PlanEntity.PlanNumber}
+				// 	});
+				// });
+			});
+		</script>
+	</body>
+
+</html>

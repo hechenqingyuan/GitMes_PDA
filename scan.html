@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/style.css" rel="stylesheet" />
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">登录</h1>
+		</header>
+		<div class="mui-content logincontainer">
+			<div id='login-form' class="mui-input-group login">
+				<div class="mui-input-row row">
+					<input id='UserCode' type="text" class="mui-input-clear rowinput" placeholder="请扫描工号登录" autofocus="true">
+				</div>
+			</div>
+			<div class="mui-content-padded">
+				<button id='scan' type="button" class="mui-btn mui-btn-block mui-btn-primary">工号登录</button>
+				<button id='login' type="button" class="mui-btn mui-btn-block mui-btn-success">用户密码登录</button>
+			</div>
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript" src="js/jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="js/moment.min.js"></script>
+		<script type="text/javascript" src="js/git.mes.common.js"></script>
+		<script type="text/javascript" src="js/git.mes.key.js"></script>
+		<script type="text/javascript">
+			mui.plusReady(function(){
+
+				plus.webview.currentWebview().addEventListener("show",function(e){
+	                setTimeout(function() {
+                        openSoftKeyboard();
+                        document.getElementById("UserCode").focus();
+                        closeKeyBoard();
+                    	plus.key.hideSoftKeybord();
+                    }, 300);
+	            });
+
+				var Login=function(UserCode){
+					var param={};
+					param["UserCode"]=UserCode;
+					git.gitAjax({
+						url:UserApiName.UserApiName_Scan,
+						data:param,
+						type:"get",
+						success:function(result){
+							git.RemoveCache(CacheKey.LoginUser);
+							if(result.Code==1 && result.Result!=undefined){
+								git.AddObjectCache(CacheKey.LoginUser,result.Result);
+								mui.openWindow({
+									id:"main.html",
+									url:"main.html",
+									createNew:true,
+									show:{
+										autoShow:true,
+									}
+								});
+							}else{
+								git.PlayerError();
+								mui.toast('该工号不存在,请确认再登录',{ duration:'long', type:'div' }); 
+							}
+						}
+					});
+				}
+
+				document.getElementById("scan").addEventListener("tap",function(){
+					var UserCode=$("#UserCode").val();
+					Login(UserCode);
+				});
+
+				document.getElementById("UserCode").addEventListener("keypress", function(event) {
+			        if (event.keyCode == "13"){
+			        	var UserCode=$("#UserCode").val();
+			            if(!git.IsEmpty(UserCode)){
+			            	Login(UserCode);
+			            	$("#UserCode").val("");
+			            }else{
+			            	git.PlayerError();
+			            }
+			        }
+			    });
+
+
+				//扫描登录
+				document.getElementById("login").addEventListener("tap",function(){
+					mui.openWindow({
+						id:"login.html",
+						url:"login.html",
+						createNew:false,
+						show:{
+							autoShow:true,
+						}
+					});
+				});
+			});
+		</script>
+	</body>
+
+</html>

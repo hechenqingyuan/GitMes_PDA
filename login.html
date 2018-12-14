@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/style.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">登录</h1>
+		</header>
+		<div class="mui-content logincontainer">
+			<div id='login-form' class="mui-input-group login">
+				<div class="mui-input-row row">
+					<label>用户</label>
+					<input id='account' value="administrator" type="text" class="mui-input-clear mui-input rowinput" placeholder="请输入用户名或工号">
+				</div>
+				<div class="mui-input-row row">
+					<label>密码</label>
+					<input id='password' type="password" value="000000" class="mui-input-clear mui-input rowinput" placeholder="请输入密码">
+				</div>
+			</div>
+			<div class="mui-content-padded">
+				<button id='login' type="button" class="mui-btn mui-btn-block mui-btn-primary">登录</button>
+				<button id='scan' type="button" class="mui-btn mui-btn-block mui-btn-success">扫描登录</button>
+			</div>
+		</div>
+
+	 	<header class="mui-bar foot">
+			V1.0  &nbsp;&nbsp;技术支持15800466429
+			<button id="btnSetting" type="button" class="mui-btn mui-btn-outlined setting">设置</button>
+		</header>
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript" src="js/jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="js/moment.min.js"></script>
+		<script type="text/javascript" src="js/git.mes.common.js"></script>
+		<script type="text/javascript" src="js/git.mes.key.js"></script>
+		<script type="text/javascript">
+			mui.plusReady(function(){
+				document.getElementById("login").addEventListener("tap",function(){
+					var UserName=$("#account").val();
+					var PassWord=$("#password").val();
+					if(git.IsEmpty(UserName)){
+						mui.toast('用户名为空',{ duration:'long', type:'div' }); 
+						git.PlayerError();
+						return false;
+					}
+					if(git.IsEmpty(PassWord)){
+						mui.toast('密码为空',{ duration:'long', type:'div' }); 
+						git.PlayerError();
+						return false;
+					}
+					var param={};
+					param["UserName"]=UserName;
+					param["PassWord"]=PassWord;
+					git.gitAjax({
+						url:UserApiName.UserApiName_Login,
+						data:param,
+						type:"get",
+						success:function(result){
+							git.RemoveCache(CacheKey.LoginUser);
+							if(result.Code==1){
+								git.AddObjectCache(CacheKey.LoginUser,result.Result);
+								mui.openWindow({
+									id:"main.html",
+									url:"main.html",
+									createNew:true,
+									show:{
+										autoShow:true,
+									}
+								});
+							}else{
+								git.PlayerError();
+								mui.toast(result.Message,{ duration:'long', type:'div' }); 
+							}
+						}
+					});
+				});
+
+
+				//扫描登录
+				document.getElementById("scan").addEventListener("tap",function(){
+					mui.openWindow({
+						id:"scan.html",
+						url:"scan.html",
+						createNew:false,
+						show:{
+							autoShow:true,
+						}
+					});
+				});
+
+				//设置
+				document.getElementById("btnSetting").addEventListener("tap",function(){
+					mui.prompt('服务','请输入服务地址','设置',['确定','取消'],function(e){
+						if(e.index==0){
+							var value=e.value;
+							git.AddCache(CacheKey.ServerName,value);
+						}
+					},'div');
+				});
+
+				mui.back =function(){
+					var btn = ["确定","取消"];
+					mui.confirm('确认关闭当前窗口？','提示',btn,function(e){
+						if(e.index==0){
+							mui.currentWebview.close();
+						}
+					});
+				}
+
+			});
+		</script>
+	</body>
+
+</html>

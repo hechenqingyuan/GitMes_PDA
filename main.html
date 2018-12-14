@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title></title>
+	<link href="css/mui.min.css" rel="stylesheet" />
+	<link href="css/style.css" rel="stylesheet" />
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<h1 class="mui-title">功能选项</h1>
+	</header>
+	<div class="mui-content-padded">
+		<ul id="iconlist" class="mui-table-view mui-grid-view">
+			<li class="mui-table-view-cell mui-col-xs-3 mui-col-sm-2 iconlist clip"  id="btnWeightComplete">
+				<span class="mui-icon mui-icon-pengyouquan"></span>	
+				<div class="mui-media-body">称量清场</div>
+			</li>
+			<li class="mui-table-view-cell mui-col-xs-3 mui-col-sm-2 iconlist clip"  id="btnRevMaterial">
+				<span class="mui-icon mui-icon-chat"></span>	
+				<div class="mui-media-body">产线收料</div>
+			</li>
+			<li class="mui-table-view-cell mui-col-xs-3 mui-col-sm-2 iconlist clip"  id="btnStartPlan">
+				<span class="mui-icon mui-icon-star"></span>	
+				<div class="mui-media-body">开始任务</div>
+			</li>
+			<li class="mui-table-view-cell mui-col-xs-3 mui-col-sm-2 iconlist clip"  id="btnIntoMaterial">
+				<span class="mui-icon mui-icon-compose"></span>	
+				<div class="mui-media-body">投料复核</div>
+			</li>
+		
+			
+
+			<li class="mui-table-view-cell mui-col-xs-3 mui-col-sm-2 iconlist clip"  id="btnComplete">
+				<span class="mui-icon mui-icon-plus"></span>	
+				<div class="mui-media-body">生产报产</div>
+			</li>
+			<li class="mui-table-view-cell mui-col-xs-3 mui-col-sm-2 iconlist clip"  id="btnLoginOut">
+				<span class="mui-icon mui-icon-contact"></span>	
+				<div class="mui-media-body">退出系统</div>
+			</li>
+		</ul>
+	</div>
+	
+	<header class="mui-bar stabar" id="btnUserInfo"></header>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/jquery-1.11.1.js"></script>
+	<script type="text/javascript" src="js/moment.min.js"></script>
+	<script type="text/javascript" src="js/git.mes.common.js"></script>
+	<script type="text/javascript" src="js/git.mes.key.js"></script>
+	<script type="text/javascript">
+		mui.plusReady(function(){
+			this.SetUserInfo();
+			
+			document.getElementById("btnLoginOut").addEventListener("tap",function(){
+				mui.openWindow({
+					id:"login.html",
+					url:"login.html",
+					createNew:true,
+					show:{
+						autoShow:true,
+					}
+				});
+			});
+
+			document.getElementById("btnRevMaterial").addEventListener("tap",function(){
+				mui.openWindow({
+					id:"Rev/ScanOrder.html",
+					url:"Rev/ScanOrder.html",
+					createNew:true,
+					show:{
+						autoShow:true,
+					}
+				});
+			});
+
+			document.getElementById("btnIntoMaterial").addEventListener("tap",function(){
+				mui.openWindow({
+					id:"Into/Feed.html",
+					url:"Into/Feed.html",
+					createNew:true,
+					show:{
+						autoShow:true,
+					}
+				});
+			});
+
+			document.getElementById("btnStartPlan").addEventListener("tap",function(){
+				mui.openWindow({
+					id:"Start/Start.html",
+					url:"Start/Start.html",
+					createNew:true,
+					show:{
+						autoShow:true,
+					}
+				});
+			});
+			
+			document.getElementById("btnWeightComplete").addEventListener("tap",function(){
+				mui.openWindow({
+					id:"Check/ScanOrder.html",
+					url:"Check/ScanOrder.html",
+					createNew:true,
+					show:{
+						autoShow:true,
+					}
+				});
+			});
+
+			document.getElementById("btnComplete").addEventListener("tap",function(){
+				mui.openWindow({
+					id:"ProcNum/ScanOrder.html",
+					url:"ProcNum/ScanOrder.html",
+					createNew:true,
+					show:{
+						autoShow:true,
+					}
+				});
+			});
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+.header{margin-top: 0px;}
+.logincontainer{ text-align: center; margin-top: 60px;}
+.login{width: 100%;margin: 0 auto; }
+.login .row { height: 55px;}
+.row label{width: 20%;}
+.row .rowinput{width: 80%; font-size: 20px;}
+.foot{bottom:0px; position: fixed; vertical-align: middle; padding-top: 10px; font-size: 14px;}
+.foot button.setting{ margin-top: -12px; float: right; }
+.stabar{bottom:0px; position: fixed; vertical-align: middle; padding-top: 10px; text-align: left; font-size: 12px;}
+
+.grid{text-align: center;vertical-align: middle; border-style: solid;border-width: 1px; border-color: #B2985C; height:100px; padding-top: 15px; }
+.grid .item{ margin-top: 20px; }
+.BarCode{width: 95%; font-size: 18px; text-align: center;}
+
+.mui-input-row label.title{width: 23%; padding-left: 1px; font-weight: bold;}
+.mui-input-row label.intocontent{width: 70%; padding-left: 2px;}
+
+.mui-content-padded{ margin-top: 45px; margin-left: 0px; margin-right: 0px;}
+.iconlist{height: 80px;}
+.mui-icon{ margin-top: 10px; }
+.mui-media-body{ }
+
+.feeditem{color: blue;}
+
+.mui-input-group.item{ font-size: 13px; padding-top: -5px; padding-bottom: 0px; height: 30px;}
+.mui-input-group.inputitem{ font-size: 13px; padding-top: -5px; padding-bottom: 0px; height: 40px;}
+.mui-table-view-cell.cellitem{ height: 30px;}

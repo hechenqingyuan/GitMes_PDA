@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">产线收料</h1>
+		</header>
+		<div class="mui-content">
+			<div id='login-form' class="mui-input-group">
+				<div class="mui-input-row row">
+					<input id='OrderNum' type="text" class="mui-input-clear BarCode" placeholder="请扫描工单上二维码" autofocus="true">
+				</div>
+			</div>
+			<div class="mui-content-padded">
+				<button id='btnBack' type="button" class="mui-btn mui-btn-block mui-btn-primary">返回主页</button>
+			</div>
+		</div>
+		<header class="mui-bar stabar" id="btnUserInfo">
+			
+		</header>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="../js/moment.min.js"></script>
+		<script type="text/javascript" src="../js/git.mes.common.js"></script>
+		<script type="text/javascript" src="../js/git.mes.key.js"></script>
+		<script type="text/javascript">
+			mui.plusReady(function(){
+
+				plus.webview.currentWebview().addEventListener("show",function(e){
+	                setTimeout(function() {
+                        openSoftKeyboard();
+                        document.getElementById("OrderNum").focus();
+                        closeKeyBoard();
+                    	plus.key.hideSoftKeybord();
+                    }, 300);
+	            });
+
+				var Scan=function(OrderNum){
+					var param={};
+					param["PlanNumber"]=OrderNum;
+					git.gitAjax({
+						url:PlanApiName.PlanApiName_GetPlanByNumber,
+						data:param,
+						type:"get",
+						success:function(result){
+							if(result.Code==1 && result.Result!=undefined){
+								mui.openWindow({
+									id:"rev.html",
+									url:"rev.html",
+									createNew:true,
+									show:{
+										autoShow:true,
+									},
+									extras:result.Result
+								});
+							}else{
+								git.PlayerError();
+								mui.toast('该生产工单不存在,请确认再扫描',{ duration:'long', type:'div' }); 
+							}
+						}
+					});
+				}
+
+				document.getElementById("OrderNum").addEventListener("keypress", function(event) {
+			        if (event.keyCode == "13"){
+			        	var OrderNum=$("#OrderNum").val();
+			            if(!git.IsEmpty(OrderNum)){
+			            	Scan(OrderNum);
+			            	$("#OrderNum").val("");
+			            }else{
+			            	git.PlayerError();
+			            }
+			        }
+			    });
+			    
+
+				//退回到主页
+				document.getElementById("btnBack").addEventListener("tap",function(){
+					mui.openWindow({
+						id:"main.html",
+						url:"main.html",
+						createNew:false,
+						show:{
+							autoShow:true,
+						}
+					});
+				});
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">称量清场</h1>
+		</header>
+		
+
+		<div class="mui-content">
+			<div class="mui-content-padded">
+			<ul class="mui-table-view" id="tabList">
+			    
+			</ul>
+		</div>
+			<div class="mui-content-padded">
+				<button id='btnBack' class="mui-btn mui-btn-block mui-btn-primary">返回主页</button>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="../js/moment.min.js"></script>
+		<script type="text/javascript" src="../js/git.mes.common.js"></script>
+		<script type="text/javascript" src="../js/git.mes.key.js"></script>
+		<script type="text/javascript">
+			mui.plusReady(function(){
+
+				plus.webview.currentWebview().addEventListener("show",function(e){
+	                
+	            });
+	            
+				var webview=plus.webview.currentWebview();
+				var listTask=webview.Result;
+				var html='';
+				if(listTask!=undefined && listTask.length>0){
+					for(var i=0;i<listTask.length;i++){
+						var item=listTask[i];
+						html+='<li class="mui-table-view-cell mui-media cellitem">';
+							html+='<a href="javascript:;">';
+								var SendTime=git.JsonToDateTime(item.SendTime);
+								if(!git.IsEmpty(SendTime)){
+									html+='<span class="mui-badge mui-badge-success">已清</span>';
+								}else{
+									html+='<span class="mui-badge mui-badge-purple">待</span>';
+								}
+								html+='<div class="mui-media-body">';
+									html+="原料代号:&nbsp;"+item.PartBarCode;
+									var DemQty=item.DemQty*1000;
+									var RealQty=item.RealQty*1000;
+									html+='<p class="mui-ellipsis">实际/要求(g):&nbsp;'+git.ToDecimal(RealQty,4)+'/'+git.ToDecimal(DemQty,4)+'</p>';
+									
+									if(parseFloat(RealQty)>0){
+										html+='<p class="mui-ellipsis">批次:&nbsp;'+item.BatchNum+'</p>';
+									}else{
+										html+='<p class="mui-ellipsis"><span class="mui-badge  mui-badge-warning">未称量</span></p>';
+									}
+									
+								html+='</div>';
+							html+='</a>';
+						html+='</li>">';
+					}
+				}
+				document.getElementById('tabList').innerHTML = html;
+				
+				/**
+				 * 退回到功能选项主页
+				 * [description]
+				 * @param  {[type]} ){					mui.openWindow({						id:"../main.html",						url:"../main.html",						createNew:false,						show:{							autoShow:true,						}					});				} [description]
+				 * @return {[type]}                                                                                                                                                           [description]
+				 */
+				document.getElementById("btnBack").addEventListener("tap",function(){
+					mui.openWindow({
+						id:"../main.html",
+						url:"../main.html",
+						createNew:false,
+						show:{
+							autoShow:true,
+						}
+					});
+				});
+			});
+		</script>
+	</body>
+
+</html>

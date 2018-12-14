@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">投料人工确认</h1>
+		</header>
+		<div class="mui-content">
+			<div id='login-form' class="mui-input-group">
+				<div class="mui-input-row row">
+					<input id='BarCode' type="text" class="mui-input-clear BarCode" autofocus="true" placeholder="请扫描投料人二维码">
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">物料名称:</label>
+					<label id="lblMaterialName" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title" style="font-size: 12px;">要求(g):</label>
+					<label id="lblWeQty" class="intocontent"></label>
+				</div>
+			</div>
+
+
+			<div class="mui-input-group item">
+				<form class="mui-input-group">
+				    <div class="mui-input-row">
+				        <label class="title">投料人</label>
+				        <label id="txtUserName" class="intocontent"></label>
+				    	<input id="txtUserNum" type="hidden" class="mui-input-clear" placeholder="">
+				    </div>
+				</form>
+			</div>
+			<div class="mui-input-group inputitem">
+				<form class="mui-input-group">
+				    <div class="mui-input-row">
+				        <label class="title">投料量(g)</label>
+				    	<input id="txtRealQty" type="text" class="mui-input-clear" placeholder="请输入投料量">
+				    </div>
+				</form>
+			</div>
+
+			<div class="mui-content-padded" style="text-align: center;">
+				<button id='btnBack' type="button" class="mui-btn mui-btn-primary mui-btn-outlined">返回主页</button>
+				<button id='btnConfirm' type="button" class="mui-btn mui-btn-success mui-btn-outlined">确定</button>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="../js/moment.min.js"></script>
+		<script type="text/javascript" src="../js/git.mes.common.js"></script>
+		<script type="text/javascript" src="../js/git.mes.key.js"></script>
+		<script type="text/javascript">
+			mui.plusReady(function(){
+
+				plus.webview.currentWebview().addEventListener("show",function(e){
+	                setTimeout(function() {
+                        openSoftKeyboard();
+                        document.getElementById("txtUserName").focus();
+                        closeKeyBoard();
+                    	plus.key.hideSoftKeybord();
+                    }, 300);
+	            });
+
+				var webview=plus.webview.currentWebview();
+				var SnNum=webview.Result;
+
+				var TaskEntity=undefined;
+				var GetTask=function(BarCode){
+					var param={};
+					param["SnNum"]=BarCode;
+					git.gitAjax({
+						url:WeightApiName.WeightApiName_GetTask,
+						data:param,
+						type:"get",
+						success:function(result){
+							console.log(JSON.stringify(result));
+							if(result.Code==1 && result.Result!=undefined){
+								TaskEntity=result.Result;
+								TaskEntity.DemQty=git.ToDecimal(parseFloat(TaskEntity.DemQty)*1000,4); 
+								TaskEntity.RealQty=git.ToDecimal(parseFloat(TaskEntity.RealQty)*1000,4); 
+								$("#lblMaterialName").text(TaskEntity.PartName);
+								$("#lblWeQty").text(TaskEntity.DemQty);
+							}else{
+								git.PlayerError();
+								mui.toast("[错误]:"+result.Message,{ duration:'long', type:'div' }); 
+							}
+						}
+					});
+				}
+				GetTask(SnNum);
+
+				document.getElementById("BarCode").addEventListener("keypress", function(event) {
+			        if (event.keyCode == "13"){
+			        	var BarCode=$("#BarCode").val();
+			            if(!git.IsEmpty(BarCode)){
+			            	var param={};
+							param["UserCode"]=BarCode;
+							console.log(JSON.stringify(param));
+							
+							git.gitAjax({
+								url:UserApiName.UserApiName_Scan,
+								data:param,
+								type:"get",
+								success:function(result){
+									if(result.Code==1 && result.Result!=undefined){
+										var Result=result.Result;
+										$("#txtUserName").text(Result.UserName);
+										$("#txtUserNum").val(Result.UserNum);
+									}else{
+										git.PlayerError();
+										mui.toast('该工号不存在,请确认',{ duration:'long', type:'div' }); 
+									}
+								}
+							});
+							$("#BarCode").val("");
+			            }else{
+			            	git.PlayerError();
+			            }
+			        }
+			    });
+			    
+				/**
+				 * 退回到主页
+				 * [description]
+				 * @param  {[type]} ){					mui.openWindow({						id:"../main.html",						url:"../main.html",						createNew:false,						show:{							autoShow:true,						}					});				} [description]
+				 * @return {[type]}                                                                                                                                                           [description]
+				 */
+				document.getElementById("btnBack").addEventListener("tap",function(){
+					mui.openWindow({
+						id:"../main.html",
+						url:"../main.html",
+						createNew:false,
+						show:{
+							autoShow:true,
+						}
+					});
+				});
+
+				/**
+				 * 确定人工投料
+				 * [description]
+				 * @param  {[type]} ){									} [description]
+				 * @return {[type]}                [description]
+				 */
+				document.getElementById("btnConfirm").addEventListener("tap",function(){
+					
+
+					var UserNum=$("#txtUserNum").val();
+					var RealQty=$("#txtRealQty").val();
+					if(isNaN(RealQty)){
+						git.PlayerError();
+						mui.toast('投料量必须为数字',{ duration:'long', type:'div' }); 
+						return false;
+					}
+					RealQty=git.IsEmptyNum(RealQty,0);
+					RealQty=RealQty/1000;
+					var param={};
+					param["SnNum"]=SnNum;
+					param["UserNum"]=UserNum;
+					param["RealQty"]=RealQty;
+					param["PlanNum"]=TaskEntity.PlanSnNum;
+					console.log(JSON.stringify(param));
+					git.gitAjax({
+						url:WeightApiName.WeightApiName_IntoWater,
+						data:param,
+						type:"get",
+						success:function(result){
+							console.log(JSON.stringify(result));
+							if(result.Code==1){
+								mui.toast(result.Message,{ duration:'long', type:'div' }); 
+								var checkPage = plus.webview.getWebviewById('Check.html');
+					            mui.fire(checkPage, 'BackRefresh');
+					            mui.back();
+							}else{
+								git.PlayerError();
+								mui.toast("[错误]:"+result.Message,{ duration:'long', type:'div' }); 
+							}
+						}
+					});
+				});
+
+			});
+		</script>
+	</body>
+
+</html>

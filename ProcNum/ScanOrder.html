@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/style.css" rel="stylesheet" />
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">生产报产</h1>
+		</header>
+		<div class="mui-content">
+			<div id='login-form' class="mui-input-group">
+				<div class="mui-input-row row">
+					<input id='BarCode' type="text" class="mui-input-clear BarCode" autofocus="true" placeholder="请扫描工单上二维码">
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">计划单号:</label>
+					<label id="lblPlanNumber" class="intocontent"></label>
+					<input type="hidden" id="txtPlanSnNum" name="txtPlanSnNum" value="">
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">工单号:</label>
+					<label id="lblOrderNum" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">客户名称:</label>
+					<label id="lblCusName" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">产品名称:</label>
+					<label id="lblProductName" class="intocontent" style="font-size: 12px;"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">产品代号:</label>
+					<label id="lblProductBarCode" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">配方代号:</label>
+					<label id="lblBomNumber" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group item">
+				<div class="mui-input-row">
+					<label class="title">预计产量:</label>
+					<label id="lblQty" class="intocontent"></label>
+				</div>
+			</div>
+			<div class="mui-input-group inputitem">
+				<form class="mui-input-group">
+				    <div class="mui-input-row">
+				        <label class="title">实际产量</label>
+				    	<input id="txtFinishQty" type="text" class="mui-input-clear" placeholder="请输入实际产量">
+				    </div>
+				</form>
+			</div>
+			<div class="mui-input-group inputitem">
+				<form class="mui-input-group">
+				    <div class="mui-input-row">
+				        <label class="title">件数</label>
+				    	<input id="txtNum" type="text" class="mui-input-clear" placeholder="请输入件数">
+				    </div>
+				</form>
+			</div>
+			<div class="mui-input-group inputitem">
+				<form class="mui-input-group">
+				    <div class="mui-input-row">
+				        <label class="title">批次号</label>
+				    	<input id="txtBatchNum" type="text" class="mui-input-clear" placeholder="请输入批次号">
+				    </div>
+				</form>
+			</div>
+			<div class="mui-input-group inputitem">
+				<form class="mui-input-group">
+				    <div class="mui-input-row">
+				        <label class="title">备注</label>
+				    	<input id="txtRemark" type="text" class="mui-input-clear" placeholder="请输入备注信息">
+				    </div>
+				</form>
+			</div>
+			<div class="mui-content-padded" style="text-align: center; margin-top: 6px;">
+				<button id='btnConfirm' type="button" class="mui-btn mui-btn-primary mui-btn-outlined">确定</button>
+				<button id='btnBack' type="button" class="mui-btn mui-btn-success mui-btn-outlined">返回主页</button>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/jquery-1.11.1.js"></script>
+		<script type="text/javascript" src="../js/moment.min.js"></script>
+		<script type="text/javascript" src="../js/git.mes.common.js"></script>
+		<script type="text/javascript" src="../js/git.mes.key.js"></script>
+		<script type="text/javascript">
+			mui.plusReady(function(){
+
+				plus.webview.currentWebview().addEventListener("show",function(e){
+	                setTimeout(function() {
+                        openSoftKeyboard();
+                        document.getElementById("BarCode").focus();
+                        closeKeyBoard();
+                    	plus.key.hideSoftKeybord();
+                    }, 300);
+	            });
+
+				var PlanEntity=undefined;
+
+				/**
+				 * 生产报产
+				 * [SaveNum description]
+				 */
+				function SaveNum() {
+					var FinishQty=$('#txtFinishQty').val();
+					var Num=$('#txtNum').val();
+					var BatchNum=$('#txtBatchNum').val();
+					var Remark=$('#txtRemark').val();
+					
+					if(PlanEntity==undefined){
+						git.PlayerError();
+						mui.toast('请先扫描工单上二维码',{ duration:'long', type:'div' }); 
+						return false;
+					}
+					if(git.IsEmpty(FinishQty)){
+						git.PlayerError();
+						mui.toast('请输入实际产量',{ duration:'long', type:'div' }); 
+						return false;
+					}
+					if(isNaN(FinishQty)){
+						git.PlayerError();
+						mui.toast('实际产量必须位数字',{ duration:'long', type:'div' }); 
+						return false;
+					}
+	            	var param={};
+					param["SnNum"]=PlanEntity.SnNum;
+					param["FinishQty"]=FinishQty;
+					param["Num"]=Num;
+					param["BatchNum"]=BatchNum;
+					param["Remark"]=Remark;
+					
+					console.log(JSON.stringify(param));
+					git.gitAjax({
+						url:PlanApiName.PlanApiName_Complete,
+						data:param,
+						type:"get",
+						success:function(result){
+							console.log(JSON.stringify(result));
+							if(result.Code==1){
+								mui.toast('已经完成该任务并且保存产量',{ duration:'long', type:'div' }); 
+							}else{
+								git.PlayerError();
+								mui.toast(result.Message,{ duration:'long', type:'div' }); 
+							}
+						}
+					});
+	            }
+
+				/**
+				 * 扫描生产计划任务单二维码
+				 * [GetPlan description]
+				 * @param {[type]} BarCode [description]
+				 */
+				var GetPlan=function(BarCode){
+					var param={};
+					param["PlanNumber"]=BarCode;
+					git.gitAjax({
+						url:PlanApiName.PlanApiName_GetPlanByNumber,
+						data:param,
+						type:"get",
+						success:function(result){
+							if(result.Code==1 && result.Result!=undefined){
+								PlanEntity=result.Result;
+								$("#lblPlanNumber").text(PlanEntity.PlanNumber);
+								$("#lblOrderNum").text(PlanEntity.OrderNum);
+								$("#txtPlanSnNum").val(PlanEntity.SnNum);
+								$("#lblCusName").text(PlanEntity.CusName);
+								$("#lblProductName").text(PlanEntity.ProductName);
+								$("#lblProductBarCode").text(PlanEntity.BarCode);
+								$("#lblBomNumber").text(PlanEntity.BomNumber);
+								$("#lblQty").text(PlanEntity.PlanQty+"kg");
+								$("#txtFinishQty").val("");
+
+							}else{
+								git.PlayerError();
+								$("#lblPlanNumber").text("");
+								$("#lblOrderNum").text("");
+								$("#txtPlanSnNum").val("");
+								$("#lblCusName").text("");
+								$("#lblProductName").text("");
+								$("#lblProductBarCode").text("");
+								$("#lblBomNumber").text("");
+								$("#lblQty").text("");
+								$("#txtFinishQty").val("");
+							}
+						}
+					});
+				}
+
+				document.getElementById("BarCode").addEventListener("keypress", function(event) {
+			        if (event.keyCode == "13"){
+			        	var BarCode=$("#BarCode").val();
+			            if(!git.IsEmpty(BarCode)){
+			            	GetPlan(BarCode);
+			            	$("#BarCode").val("");
+			            }else{
+			            	git.PlayerError();
+			            }
+			        }
+			    });
+
+				/**
+				 * 确定
+				 * [description]
+				 * @param  {[type]} ){					mui.openWindow({						id:"../main.html",						url:"../main.html",						createNew:false,						show:{							autoShow:true,						}					});				} [description]
+				 * @return {[type]}                                                                                                                                                           [description]
+				 */
+			    document.getElementById("btnConfirm").addEventListener("tap",function(){
+					SaveNum();
+				});
+			    
+				/**
+				 * 退回到主页
+				 * [description]
+				 * @param  {[type]} ){					mui.openWindow({						id:"../main.html",						url:"../main.html",						createNew:false,						show:{							autoShow:true,						}					});				} [description]
+				 * @return {[type]}                                                                                                                                                           [description]
+				 */
+				document.getElementById("btnBack").addEventListener("tap",function(){
+					mui.openWindow({
+						id:"../main.html",
+						url:"../main.html",
+						createNew:false,
+						show:{
+							autoShow:true,
+						}
+					});
+				});
+			});
+		</script>
+	</body>
+
+</html>
